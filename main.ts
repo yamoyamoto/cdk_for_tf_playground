@@ -8,7 +8,7 @@ class MyStack extends TerraformStack {
     super(scope, id);
 
     new AwsProvider(this, "AWS", {
-      region: "us-west-1",
+      region: "ap-northeast-1",
     });
 
     const ec2Instance = new Instance(this, "compute", {
@@ -26,6 +26,7 @@ const app = new App();
 const stack = new MyStack(app, "cdk_for_tf_playground");
 
 new S3Backend(stack, {
+  region: "ap-northeast-1",
   bucket: "cdktf-playground",
   key: "cdktf.tfstate",
 });
