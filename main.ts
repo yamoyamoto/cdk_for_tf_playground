@@ -1,14 +1,33 @@
+import { Instance } from "@cdktf/provider-aws/lib/instance";
+import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
+import { App, S3Backend, TerraformOutput, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
-import { App, TerraformStack } from "cdktf";
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    // define resources here
+    new AwsProvider(this, "AWS", {
+      region: "us-west-1",
+    });
+
+    const ec2Instance = new Instance(this, "compute", {
+      ami: "ami-01456a894f71116f2",
+      instanceType: "t2.micro",
+    });
+
+    new TerraformOutput(this, "public_ip", {
+      value: ec2Instance.publicIp,
+    });
   }
 }
 
 const app = new App();
-new MyStack(app, "cdk_for_tf_playground");
+const stack = new MyStack(app, "cdk_for_tf_playground");
+
+new S3Backend(stack, {
+  bucket: "cdktf-playground",
+  key: "cdktf.tfstate",
+});
+
 app.synth();
